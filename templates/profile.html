@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile – VYNERA AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@1,300&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #060606;
+        --accent: #c9ff00;
+        --text: #e8e8e0;
+        --muted: #666;
+        --card: #0c0c0b;
+        --border: #1e1e1c;
+        --input: #0a0a09;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-family: "DM Sans", sans-serif;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+        opacity: 0.035;
+        pointer-events: none;
+        z-index: 9999;
+      }
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .sidebar {
+        width: 220px;
+        border-right: 1px solid var(--border);
+        padding: 28px 0;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-logo {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 22px;
+        letter-spacing: 4px;
+        color: var(--accent);
+        padding: 0 24px;
+        margin-bottom: 40px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        font-size: 13px;
+        color: var(--muted);
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 2px solid transparent;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        color: var(--text);
+        border-left-color: var(--accent);
+      }
+      .nav-item.active {
+        color: var(--accent);
+      }
+      .main {
+        flex: 1;
+        padding: 48px;
+        max-width: 720px;
+      }
+      .page-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 3px;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+      .page-title {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 52px;
+        letter-spacing: 2px;
+        margin-bottom: 40px;
+      }
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-head {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .form-group {
+        margin-bottom: 18px;
+      }
+      label {
+        display: block;
+        font-size: 11px;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1.5px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      input,
+      select {
+        width: 100%;
+        background: var(--input);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        padding: 12px 16px;
+        outline: none;
+        border-radius: 2px;
+        transition: border-color 0.2s;
+        -webkit-appearance: none;
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+      }
+      select option {
+        background: var(--bg);
+      }
+      .btn {
+        font-family: "DM Sans", sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        padding: 11px 24px;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+      }
+      .btn-solid {
+        background: var(--accent);
+        color: #060606;
+      }
+      .btn-solid:hover {
+        background: #d4ff20;
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+      .btn-ghost:hover {
+        border-color: var(--text);
+        color: var(--text);
+      }
+      .btn-danger {
+        background: transparent;
+        border: 1px solid #662020;
+        color: #cc4444;
+      }
+      .btn-danger:hover {
+        background: #cc4444;
+        color: #fff;
+      }
+      .toast {
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 14px 20px;
+        font-size: 13px;
+        border-radius: 2px;
+        display: none;
+        z-index: 1000;
+      }
+      .toast.show {
+        display: block;
+      }
+      .toast.success {
+        border-color: rgba(201, 255, 0, 0.4);
+        color: var(--accent);
+      }
+      .toast.error {
+        border-color: rgba(200, 60, 60, 0.4);
+        color: #ff6060;
+      }
+      .danger-zone {
+        border: 1px solid #331010;
+        padding: 24px;
+        background: rgba(180, 30, 30, 0.04);
+      }
+      .danger-title {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 20px;
+        color: #cc4444;
+        margin-bottom: 8px;
+      }
+      .danger-desc {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 16px;
+        line-height: 1.6;
+      }
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 36px;
+        max-width: 400px;
+        width: 90%;
+      }
+      .modal h3 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 28px;
+        margin-bottom: 12px;
+        color: #cc4444;
+      }
+      .modal p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 24px;
+        line-height: 1.6;
+      }
+      .modal-btns {
+        display: flex;
+        gap: 12px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+        .main {
+          padding: 24px;
+        }
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-logo">VYNERA</div>
+        <a href="/dashboard" class="nav-item">◈ Dashboard</a>
+        <a href="/chat" class="nav-item">◎ Chat</a>
+        <a href="/history" class="nav-item">◷ History</a>
+        <a href="/profile" class="nav-item active">◉ Profile</a>
+      </aside>
+      <main class="main">
+        <div class="page-tag">// Settings</div>
+        <h1 class="page-title">Your Profile</h1>
+
+        <!-- Account Info -->
+        <div class="section">
+          <div class="section-head">Account Information</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label><input type="text" id="pName" />
+            </div>
+            <div class="form-group">
+              <label>Age</label
+              ><input type="number" id="pAge" min="13" max="120" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label><input type="email" id="pEmail" />
+          </div>
+          <div class="form-group">
+            <label>Username</label><input type="text" id="pUsername" />
+          </div>
+          <button class="btn btn-solid" onclick="saveProfile()">
+            Save Changes
+          </button>
+        </div>
+
+        <!-- Personality -->
+        <div class="section">
+          <div class="section-head">Bot Personality</div>
+          <div class="form-group">
+            <label>Preferred Style</label>
+            <select id="pPersonality">
+              <option value="encouraging">
+                Encouraging – warm, celebratory, motivating
+              </option>
+              <option value="analytical">
+                Analytical – logical, structured, precise
+              </option>
+              <option value="playful">Playful – light, witty, fun</option>
+              <option value="wise">
+                Wise – thoughtful, philosophical, measured
+              </option>
+            </select>
+          </div>
+          <button class="btn btn-solid" onclick="savePersonality()">
+            Update Personality
+          </button>
+        </div>
+
+        <!-- Password -->
+        <div class="section">
+          <div class="section-head">Change Password</div>
+          <div class="form-group">
+            <label>Current Password</label
+            ><input type="password" id="pCurrentPw" placeholder="••••••••" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>New Password</label
+              ><input
+                type="password"
+                id="pNewPw"
+                placeholder="Min 8 characters"
+              />
+            </div>
+            <div class="form-group">
+              <label>Confirm New</label
+              ><input type="password" id="pConfirmPw" placeholder="••••••••" />
+            </div>
+          </div>
+          <button class="btn btn-solid" onclick="changePassword()">
+            Update Password
+          </button>
+        </div>
+
+        <!-- Export -->
+        <div class="section">
+          <div class="section-head">Data & Privacy</div>
+          <p
+            style="
+              font-size: 13px;
+              color: var(--muted);
+              margin-bottom: 16px;
+              line-height: 1.6;
+            "
+          >
+            Export all your conversations, memories, goals, and journal entries
+            as a JSON file.
+          </p>
+          <button class="btn btn-ghost" onclick="exportData()">
+            ⬇ Export All My Data
+          </button>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="section">
+          <div class="section-head" style="color: #cc4444">Danger Zone</div>
+          <div class="danger-zone">
+            <div class="danger-title">Delete Account</div>
+            <p class="danger-desc">
+              This will permanently delete your account, all conversations,
+              memories, goals, and journal entries. This action cannot be
+              undone.
+            </p>
+            <button class="btn btn-danger" onclick="showDeleteModal()">
+              Delete My Account
+            </button>
+          </div>
+        </div>
+
+        <div style="padding-top: 16px; border-top: 1px solid var(--border)">
+          <button class="btn btn-ghost" onclick="logout()">↩ Logout</button>
+        </div>
+      </main>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal">
+        <h3>Delete Account?</h3>
+        <p>
+          Type <strong style="color: var(--text)">DELETE</strong> to confirm.
+          This removes all your data permanently.
+        </p>
+        <div class="form-group">
+          <input type="text" id="deleteConfirmInput" placeholder="DELETE" />
+        </div>
+        <div class="modal-btns">
+          <button class="btn btn-ghost" onclick="closeDeleteModal()">
+            Cancel
+          </button>
+          <button class="btn btn-danger" onclick="deleteAccount()">
+            Delete Forever
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const token = () => localStorage.getItem("vynera_token");
+      const toast = (msg, type = "success") => {
+        const el = document.getElementById("toast");
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => el.classList.remove("show"), 3200);
+      };
+
+      async function loadProfile() {
+        if (!token()) {
+          window.location.href = "/login";
+          return;
+        }
+        try {
+          const r = await fetch("/api/auth/me", {
+            headers: { Authorization: "Bearer " + token() },
+          });
+          if (r.status === 401) {
+            window.location.href = "/login";
+            return;
+          }
+          const u = await r.json();
+          document.getElementById("pName").value = u.name || "";
+          document.getElementById("pAge").value = u.age || "";
+          document.getElementById("pEmail").value = u.email || "";
+          document.getElementById("pUsername").value = u.username || "";
+          document.getElementById("pPersonality").value =
+            u.personality || "encouraging";
+        } catch (e) {
+          toast("Failed to load profile.", "error");
+        }
+      }
+
+      async function saveProfile() {
+        const payload = {
+          name: document.getElementById("pName").value.trim(),
+          age: parseInt(document.getElementById("pAge").value) || null,
+          email: document.getElementById("pEmail").value.trim(),
+          username: document.getElementById("pUsername").value.trim(),
+        };
+        try {
+          const r = await fetch("/api/user/profile", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token(),
+            },
+            body: JSON.stringify(payload),
+          });
+          if (r.ok) {
+            const u = JSON.parse(localStorage.getItem("vynera_user")||"{}"); Object.assign(u, payload); localStorage.setItem("vynera_user", JSON.stringify(u));
+            toast("Profile updated!");
+          } else {
+            const d = await r.json();
+            toast(d.detail || "Update failed.", "error");
+          }
+        } catch {
+          toast("Network error.", "error");
+        }
+      }
+
+      async function savePersonality() {
+        const payload = {
+          personality: document.getElementById("pPersonality").value,
+        };
+        try {
+          const r = await fetch("/api/user/personality", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token(),
+            },
+            body: JSON.stringify(payload),
+          });
+          if (r.ok) toast("Personality updated!");
+          else toast("Update failed.", "error");
+        } catch {
+          toast("Network error.", "error");
+        }
+      }
+
+      async function changePassword() {
+        const cur = document.getElementById("pCurrentPw").value;
+        const nw = document.getElementById("pNewPw").value;
+        const cf = document.getElementById("pConfirmPw").value;
+        if (!cur || !nw || !cf)
+          return toast("Fill all password fields.", "error");
+        if (nw.length < 8)
+          return toast("New password must be 8+ characters.", "error");
+        if (nw !== cf) return toast("New passwords do not match.", "error");
+        try {
+          const r = await fetch("/api/user/password", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token(),
+            },
+            body: JSON.stringify({ current_password: cur, new_password: nw }),
+          });
+          const d = await r.json();
+          if (r.ok) {
+            toast("Password changed!");
+            ["pCurrentPw", "pNewPw", "pConfirmPw"].forEach(
+              (id) => (document.getElementById(id).value = ""),
+            );
+          } else toast(d.detail || "Failed.", "error");
+        } catch {
+          toast("Network error.", "error");
+        }
+      }
+
+      async function exportData() {
+        try {
+          const r = await fetch("/api/export", {
+            headers: { Authorization: "Bearer " + token() },
+          });
+          if (!r.ok) return toast("Export failed.", "error");
+          const blob = await r.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "vynera_export.json";
+          a.click();
+          URL.revokeObjectURL(url);
+          toast("Export downloaded!");
+        } catch {
+          toast("Export error.", "error");
+        }
+      }
+
+      function showDeleteModal() {
+        document.getElementById("deleteModal").classList.add("show");
+      }
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.remove("show");
+      }
+
+      async function deleteAccount() {
+        if (document.getElementById("deleteConfirmInput").value !== "DELETE")
+          return toast("Type DELETE to confirm.", "error");
+        try {
+          const r = await fetch("/api/user/account", {
+            method: "DELETE",
+            headers: { Authorization: "Bearer " + token() },
+          });
+          if (r.ok) {
+            localStorage.clear();
+            window.location.href = "/";
+          } else toast("Deletion failed.", "error");
+        } catch {
+          toast("Network error.", "error");
+        }
+      }
+
+      function logout() {
+        localStorage.clear();
+        window.location.href = "/login";
+      }
+
+      loadProfile();
+    </script>
+  </body>
+</html>

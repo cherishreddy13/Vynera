@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard – VYNERA AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@1,300&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #060606;
+        --accent: #c9ff00;
+        --text: #e8e8e0;
+        --muted: #666;
+        --card: #0c0c0b;
+        --border: #1e1e1c;
+        --input: #0a0a09;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-family: "DM Sans", sans-serif;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+        opacity: 0.035;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* Sidebar */
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+      .sidebar {
+        width: 220px;
+        border-right: 1px solid var(--border);
+        padding: 28px 0;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar-logo {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 22px;
+        letter-spacing: 4px;
+        color: var(--accent);
+        padding: 0 24px;
+        margin-bottom: 40px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        font-size: 13px;
+        color: var(--muted);
+        text-decoration: none;
+        transition: all 0.2s;
+        border-left: 2px solid transparent;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        color: var(--text);
+        border-left-color: var(--accent);
+        background: rgba(201, 255, 0, 0.04);
+      }
+      .nav-item.active {
+        color: var(--accent);
+      }
+      .nav-icon {
+        font-size: 15px;
+        width: 18px;
+        text-align: center;
+      }
+      .sidebar-bottom {
+        margin-top: auto;
+        padding: 0 24px;
+      }
+      .user-chip {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 12px;
+        border-radius: 2px;
+        font-size: 12px;
+      }
+      .user-name {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .user-role {
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+      }
+
+      /* Main */
+      .main {
+        flex: 1;
+        padding: 40px 48px;
+        overflow-y: auto;
+      }
+      .page-header {
+        margin-bottom: 40px;
+      }
+      .page-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 3px;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+      .page-title {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 48px;
+        letter-spacing: 2px;
+      }
+      .page-sub {
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        color: var(--muted);
+        font-size: 16px;
+        margin-top: 4px;
+      }
+
+      /* Stats row */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        margin-bottom: 40px;
+      }
+      .stat-card {
+        background: var(--bg);
+        padding: 28px 24px;
+      }
+      .stat-num {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 48px;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1px;
+      }
+
+      /* Grid */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 28px;
+      }
+      .card-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+
+      /* Chart */
+      canvas {
+        width: 100% !important;
+      }
+      .chart-wrap {
+        position: relative;
+        height: 200px;
+      }
+
+      /* Goal list */
+      .goal-item {
+        border-bottom: 1px solid var(--border);
+        padding: 14px 0;
+      }
+      .goal-item:last-child {
+        border-bottom: none;
+      }
+      .goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .goal-name {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .goal-pct {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--accent);
+      }
+      .progress-bar {
+        height: 3px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 2px;
+        transition: width 0.8s ease;
+      }
+
+      /* Memory chips */
+      .memory-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .memory-chip {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        padding: 10px 14px;
+        border-radius: 2px;
+        font-size: 12px;
+      }
+      .mem-key {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--accent);
+        margin-bottom: 2px;
+      }
+      .mem-val {
+        color: var(--text);
+      }
+
+      /* CTA */
+      .chat-cta {
+        background: rgba(201, 255, 0, 0.05);
+        border: 1px solid rgba(201, 255, 0, 0.2);
+        padding: 28px;
+        text-align: center;
+        margin-top: 24px;
+      }
+      .chat-cta h3 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 28px;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+      .chat-cta p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .btn {
+        display: inline-block;
+        background: var(--accent);
+        color: #060606;
+        font-weight: 500;
+        font-size: 13px;
+        padding: 11px 24px;
+        border-radius: 2px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn:hover {
+        background: #d4ff20;
+      }
+
+      @media (max-width: 900px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+        .main {
+          padding: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-logo">VYNERA</div>
+        <a href="/dashboard" class="nav-item active"
+          ><span class="nav-icon">◈</span>Dashboard</a
+        >
+        <a href="/chat" class="nav-item"><span class="nav-icon">◎</span>Chat</a>
+        <a href="/history" class="nav-item"
+          ><span class="nav-icon">◷</span>History</a
+        >
+        <a href="/profile" class="nav-item"
+          ><span class="nav-icon">◉</span>Profile</a
+        >
+        <div class="sidebar-bottom">
+          <div class="user-chip">
+            <div class="user-name" id="sidebarName">–</div>
+            <div class="user-role">// companion active</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="page-header">
+          <div class="page-tag">// Overview</div>
+          <h1 class="page-title">Your Dashboard</h1>
+          <p class="page-sub" id="greetLine">Welcome back.</p>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-num" id="statSessions">–</div>
+            <div class="stat-label">Chat Sessions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statActiveGoals">–</div>
+            <div class="stat-label">Active Goals</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statDoneGoals">–</div>
+            <div class="stat-label">Goals Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statMemories">–</div>
+            <div class="stat-label">Facts Remembered</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div>
+            <div class="card" style="margin-bottom: 24px">
+              <div class="card-title">Mood Trend (Last 14 Sessions)</div>
+              <div class="chart-wrap"><canvas id="moodChart"></canvas></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Active Goals</div>
+              <div id="goalList">
+                <div style="color: var(--muted); font-size: 13px">
+                  No active goals yet. Start a chat to set one!
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom: 24px">
+              <div class="card-title">What I Know About You</div>
+              <div class="memory-list" id="memoryList">
+                <div style="color: var(--muted); font-size: 13px">
+                  Chat a bit and I'll start remembering things about you.
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-cta">
+              <h3>Ready to Talk?</h3>
+              <p>Your companion is always here.</p>
+              <a href="/chat" class="btn">Open Chat</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Inline minimal chart (no external lib dependency)
+      function drawMoodChart(canvas, moodData) {
+        const ctx = canvas.getContext("2d");
+        const W = (canvas.width = canvas.offsetWidth * window.devicePixelRatio);
+        const H = (canvas.height =
+          canvas.offsetHeight * window.devicePixelRatio);
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        const w = canvas.offsetWidth,
+          h = canvas.offsetHeight;
+
+        if (!moodData || moodData.length < 2) {
+          ctx.fillStyle = "#333";
+          ctx.font = "13px DM Sans";
+          ctx.textAlign = "center";
+          ctx.fillText("Not enough data yet", w / 2, h / 2);
+          return;
+        }
+
+        const PAD = { top: 16, right: 16, bottom: 32, left: 40 };
+        const cw = w - PAD.left - PAD.right;
+        const ch = h - PAD.top - PAD.bottom;
+
+        // Grid lines
+        ctx.strokeStyle = "#1e1e1c";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const y = PAD.top + ch - (i / 4) * ch;
+          ctx.beginPath();
+          ctx.moveTo(PAD.left, y);
+          ctx.lineTo(PAD.left + cw, y);
+          ctx.stroke();
+          ctx.fillStyle = "#444";
+          ctx.font = "9px JetBrains Mono";
+          ctx.textAlign = "right";
+          const val = ((i / 4) * 2 - 1).toFixed(1);
+          ctx.fillText(val, PAD.left - 6, y + 3);
+        }
+
+        // Zero line
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 1;
+        const zeroY = PAD.top + ch / 2;
+        ctx.beginPath();
+        ctx.moveTo(PAD.left, zeroY);
+        ctx.lineTo(PAD.left + cw, zeroY);
+        ctx.stroke();
+
+        const n = moodData.length;
+        const pts = moodData.map((d, i) => ({
+          x: PAD.left + (i / (n - 1)) * cw,
+          y: PAD.top + ch / 2 - ((d.mood / 1) * ch) / 2,
+        }));
+
+        // Fill area
+        const grad = ctx.createLinearGradient(0, PAD.top, 0, h);
+        grad.addColorStop(0, "rgba(201,255,0,0.15)");
+        grad.addColorStop(1, "rgba(201,255,0,0)");
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, zeroY);
+        pts.forEach((p) => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(pts[n - 1].x, zeroY);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Line
+        ctx.beginPath();
+        ctx.strokeStyle = "#C9FF00";
+        ctx.lineWidth = 2;
+        pts.forEach((p, i) =>
+          i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y),
+        );
+        ctx.stroke();
+
+        // Dots
+        pts.forEach((p) => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctx.fillStyle = "#C9FF00";
+          ctx.fill();
+        });
+
+        // X labels
+        ctx.fillStyle = "#444";
+        ctx.font = "9px DM Sans";
+        ctx.textAlign = "center";
+        const step = Math.ceil(n / 5);
+        moodData.forEach((d, i) => {
+          if (i % step === 0) ctx.fillText(d.date || "", pts[i].x, h - 8);
+        });
+      }
+
+      async function loadDashboard() {
+        const token = localStorage.getItem("vynera_token");
+        if (!token) { window.location.href = "/login"; return; }
+
+        const user = JSON.parse(localStorage.getItem("vynera_user") || "{}");
+        document.getElementById("sidebarName").textContent = user.name || user.username || "–";
+        const hour = new Date().getHours();
+        document.getElementById("greetLine").textContent =
+          `${hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening"}, ${user.name || "friend"}.`;
+
+        const h = (path) => fetch(path, { headers: { Authorization: "Bearer " + token } });
+
+        try {
+          const statsResp = await h("/api/dashboard/stats");
+          if (statsResp.status === 401) { window.location.href = "/login"; return; }
+          const stats = await statsResp.json();
+
+          document.getElementById("statSessions").textContent    = stats.chat_sessions    || 0;
+          document.getElementById("statActiveGoals").textContent = stats.active_goals     || 0;
+          document.getElementById("statDoneGoals").textContent   = stats.completed_goals  || 0;
+          document.getElementById("statMemories").textContent    = stats.facts_remembered || 0;
+
+          // Mood chart
+          const moodResp = await h("/api/dashboard/mood");
+          const moodRaw  = await moodResp.json();
+          const canvas = document.getElementById("moodChart");
+          if (moodRaw && moodRaw.length) {
+            const pts = moodRaw.map((d, i) => {
+              const scores = d.mood_scores || [];
+              const avg = scores.length ? scores.reduce((a,b)=>a+b,0)/scores.length : 0;
+              return { mood: avg, date: "S"+(i+1) };
+            });
+            drawMoodChart(canvas, pts);
+          } else {
+            drawMoodChart(canvas, []);
+          }
+
+          // Goals
+          const goalsResp = await h("/api/goals?status=active");
+          const goals = await goalsResp.json();
+          const goalList = document.getElementById("goalList");
+          if (goals && goals.length) {
+            goalList.innerHTML = goals.map(g => `
+              <div class="goal-item">
+                <div class="goal-header">
+                  <span class="goal-name">${g.title}</span>
+                  <span class="goal-pct">${g.progress}%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%"></div></div>
+              </div>`).join("");
+          }
+
+          // Memories
+          const memResp = await h("/api/memories");
+          const memories = await memResp.json();
+          const memList = document.getElementById("memoryList");
+          if (memories && memories.length) {
+            memList.innerHTML = memories.slice(0,5).map(m => `
+              <div class="memory-chip">
+                <div class="mem-key">${(m.key||"").replace(/_/g," ")}</div>
+                <div class="mem-val">${m.value}</div>
+              </div>`).join("");
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      loadDashboard();
+      window.addEventListener("resize", () => { loadDashboard(); });
+    </script>
+  </body>
+</html>

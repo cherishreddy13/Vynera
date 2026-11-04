@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up – VYNERA AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@1,300&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root { --bg:#060606;--accent:#c9ff00;--text:#e8e8e0;--muted:#666;--card:#0f0f0e;--border:#1e1e1c;--input:#0a0a09; }
+      *{margin:0;padding:0;box-sizing:border-box;}
+      html,body{background:var(--bg);color:var(--text);min-height:100vh;font-family:"DM Sans",sans-serif;}
+      body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:0.035;pointer-events:none;z-index:9999;}
+      nav{display:flex;justify-content:space-between;align-items:center;padding:24px 48px;}
+      .logo{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:4px;color:var(--accent);text-decoration:none;}
+      .nav-link{font-size:13px;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+      .nav-link:hover{color:var(--accent);}
+      .page-wrap{max-width:680px;margin:0 auto;padding:20px 24px 80px;}
+      .step-indicator{display:flex;gap:8px;margin-bottom:40px;}
+      .step-dot{width:24px;height:3px;background:var(--border);border-radius:2px;transition:background 0.3s;}
+      .step-dot.active{background:var(--accent);}
+      .step-dot.done{background:#4a6a00;}
+      .step{display:none;}
+      .step.active{display:block;}
+      .step-tag{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:3px;color:var(--accent);margin-bottom:12px;}
+      .step-title{font-family:"Bebas Neue",sans-serif;font-size:44px;letter-spacing:2px;margin-bottom:6px;}
+      .step-sub{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--muted);margin-bottom:36px;}
+      .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+      .form-group{margin-bottom:20px;}
+      label{display:block;font-size:11px;font-family:"JetBrains Mono",monospace;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+      input,select{width:100%;background:var(--input);border:1px solid var(--border);color:var(--text);font-family:"DM Sans",sans-serif;font-size:14px;padding:12px 16px;outline:none;border-radius:2px;transition:border-color 0.2s;-webkit-appearance:none;}
+      input:focus,select:focus{border-color:var(--accent);}
+      input::placeholder{color:#333;}
+      select option{background:var(--bg);}
+      .note{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;}
+      .p-question{margin-bottom:28px;}
+      .p-question p{font-size:14px;margin-bottom:12px;color:var(--text);}
+      .p-options{display:flex;flex-direction:column;gap:8px;}
+      .p-option{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid var(--border);border-radius:2px;cursor:pointer;transition:all 0.2s;}
+      .p-option:hover{border-color:var(--accent);}
+      .p-option input[type="radio"]{display:none;}
+      .p-option.selected{border-color:var(--accent);background:rgba(201,255,0,0.05);}
+      .p-option span{font-size:13px;}
+      .p-dot{width:14px;height:14px;border:1.5px solid var(--muted);border-radius:50%;flex-shrink:0;transition:all 0.2s;}
+      .p-option.selected .p-dot{border-color:var(--accent);background:var(--accent);}
+      .btn-row{display:flex;gap:12px;margin-top:32px;}
+      .btn{font-family:"DM Sans",sans-serif;font-weight:500;font-size:14px;letter-spacing:0.5px;padding:13px 28px;border-radius:2px;cursor:pointer;transition:all 0.2s;border:none;}
+      .btn-solid{background:var(--accent);color:#060606;}
+      .btn-solid:hover{background:#d4ff20;box-shadow:0 0 20px rgba(201,255,0,0.2);}
+      .btn-solid:disabled{opacity:0.5;cursor:not-allowed;}
+      .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+      .btn-ghost:hover{border-color:var(--muted);color:var(--text);}
+      .btn-full{width:100%;}
+      .error-msg{background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.3);color:#ff6060;font-size:13px;padding:12px 16px;border-radius:2px;margin-bottom:16px;display:none;}
+      .error-msg.show{display:block;}
+      @media(max-width:600px){.form-row{grid-template-columns:1fr;}.step-title{font-size:36px;}nav{padding:20px;}}
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="logo">VYNERA</a>
+      <a href="/login" class="nav-link">Already a member? Login →</a>
+    </nav>
+    <div class="page-wrap">
+      <div class="step-indicator">
+        <div class="step-dot active" id="dot0"></div>
+        <div class="step-dot" id="dot1"></div>
+        <div class="step-dot" id="dot2"></div>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <!-- Step 1: Account Info -->
+      <div class="step active" id="step0">
+        <div class="step-tag">// Step 1 of 3</div>
+        <h2 class="step-title">Who Are You?</h2>
+        <p class="step-sub">Let's set up your account.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Alex Chen" required />
+          </div>
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="age" placeholder="24" min="13" max="120" required />
+          </div>
+        </div>
+        <div id="parentPhoneWrap" class="form-group" style="display:none">
+          <label>Parent / Guardian Phone</label>
+          <input type="tel" id="parentPhone" placeholder="+91 99999 99999" />
+          <div class="note">Required for users under 18.</div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="alex@example.com" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="alexc" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Min 8 characters" required />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-solid" onclick="nextStep(0)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Personality -->
+      <div class="step" id="step1">
+        <div class="step-tag">// Step 2 of 3</div>
+        <h2 class="step-title">Your Inner World</h2>
+        <p class="step-sub">Five questions to calibrate your companion.</p>
+
+        <div class="p-question">
+          <p>1. When something goes wrong, I usually…</p>
+          <div class="p-options" data-q="q1">
+            <label class="p-option"><input type="radio" name="q1" value="analytical"/><div class="p-dot"></div><span>Analyse the situation step-by-step</span></label>
+            <label class="p-option"><input type="radio" name="q1" value="emotional"/><div class="p-dot"></div><span>Need to process my feelings first</span></label>
+            <label class="p-option"><input type="radio" name="q1" value="action"/><div class="p-dot"></div><span>Jump into fixing it immediately</span></label>
+            <label class="p-option"><input type="radio" name="q1" value="social"/><div class="p-dot"></div><span>Talk to someone about it</span></label>
+          </div>
+        </div>
+        <div class="p-question">
+          <p>2. My communication style is mostly…</p>
+          <div class="p-options" data-q="q2">
+            <label class="p-option"><input type="radio" name="q2" value="direct"/><div class="p-dot"></div><span>Direct and to the point</span></label>
+            <label class="p-option"><input type="radio" name="q2" value="thoughtful"/><div class="p-dot"></div><span>Thoughtful and considered</span></label>
+            <label class="p-option"><input type="radio" name="q2" value="warm"/><div class="p-dot"></div><span>Warm and emotionally expressive</span></label>
+            <label class="p-option"><input type="radio" name="q2" value="playful"/><div class="p-dot"></div><span>Light and a bit humorous</span></label>
+          </div>
+        </div>
+        <div class="p-question">
+          <p>3. I usually feel most like myself when I am…</p>
+          <div class="p-options" data-q="q3">
+            <label class="p-option"><input type="radio" name="q3" value="creating"/><div class="p-dot"></div><span>Creating or building something</span></label>
+            <label class="p-option"><input type="radio" name="q3" value="connecting"/><div class="p-dot"></div><span>Connecting deeply with others</span></label>
+            <label class="p-option"><input type="radio" name="q3" value="learning"/><div class="p-dot"></div><span>Learning or exploring ideas</span></label>
+            <label class="p-option"><input type="radio" name="q3" value="resting"/><div class="p-dot"></div><span>Resting and recharging alone</span></label>
+          </div>
+        </div>
+        <div class="p-question">
+          <p>4. When I get advice, I prefer it to be…</p>
+          <div class="p-options" data-q="q4">
+            <label class="p-option"><input type="radio" name="q4" value="encouraging"/><div class="p-dot"></div><span>Encouraging and motivating</span></label>
+            <label class="p-option"><input type="radio" name="q4" value="honest"/><div class="p-dot"></div><span>Honest even if it's hard to hear</span></label>
+            <label class="p-option"><input type="radio" name="q4" value="structured"/><div class="p-dot"></div><span>Clear and structured with steps</span></label>
+            <label class="p-option"><input type="radio" name="q4" value="open"/><div class="p-dot"></div><span>Open-ended, let me figure it out</span></label>
+          </div>
+        </div>
+        <div class="p-question">
+          <p>5. My ideal companion bot would be…</p>
+          <div class="p-options" data-q="q5">
+            <label class="p-option"><input type="radio" name="q5" value="wise"/><div class="p-dot"></div><span>Wise and philosophical</span></label>
+            <label class="p-option"><input type="radio" name="q5" value="playful"/><div class="p-dot"></div><span>Playful and light-hearted</span></label>
+            <label class="p-option"><input type="radio" name="q5" value="analytical"/><div class="p-dot"></div><span>Analytical and problem-solving</span></label>
+            <label class="p-option"><input type="radio" name="q5" value="encouraging"/><div class="p-dot"></div><span>Warm and encouraging</span></label>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevStep(1)">← Back</button>
+          <button class="btn btn-solid" onclick="nextStep(1)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Confirm -->
+      <div class="step" id="step2">
+        <div class="step-tag">// Step 3 of 3</div>
+        <h2 class="step-title">Almost There.</h2>
+        <p class="step-sub">Review your choices and create your companion.</p>
+        <div id="summaryBox" style="border:1px solid var(--border);padding:24px;border-radius:2px;margin-bottom:28px;font-size:13px;line-height:2;color:var(--muted);"></div>
+        <div class="form-group">
+          <label>Choose Your Bot Personality</label>
+          <select id="personality">
+            <option value="encouraging">Encouraging – warm, celebratory, motivating</option>
+            <option value="analytical">Analytical – logical, structured, precise</option>
+            <option value="playful">Playful – light, witty, fun</option>
+            <option value="wise">Wise – thoughtful, philosophical, measured</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="prevStep(2)">← Back</button>
+          <button class="btn btn-solid btn-full" id="submitBtn" onclick="submitForm()">Create My Companion</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      if (localStorage.getItem('vynera_token')) window.location.href = '/dashboard';
+
+      let currentStep = 0;
+      const dots  = [document.getElementById('dot0'), document.getElementById('dot1'), document.getElementById('dot2')];
+      const steps = [document.getElementById('step0'), document.getElementById('step1'), document.getElementById('step2')];
+      const errorMsg = document.getElementById('errorMsg');
+
+      document.getElementById('age').addEventListener('input', function() {
+        document.getElementById('parentPhoneWrap').style.display = parseInt(this.value) < 18 ? 'block' : 'none';
+      });
+
+      document.querySelectorAll('.p-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          const name = opt.querySelector('input').name;
+          document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.closest('.p-option').classList.remove('selected'));
+          opt.classList.add('selected');
+          opt.querySelector('input').checked = true;
+        });
+      });
+
+      function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.add('show'); errorMsg.scrollIntoView({behavior:'smooth'}); }
+      function clearError() { errorMsg.classList.remove('show'); }
+
+      function nextStep(from) {
+        clearError();
+        if (from === 0) {
+          const name = document.getElementById('name').value.trim();
+          const age  = parseInt(document.getElementById('age').value);
+          const email = document.getElementById('email').value.trim();
+          const username = document.getElementById('username').value.trim();
+          const password = document.getElementById('password').value;
+          if (!name || !age || !email || !username || !password) return showError('Please fill all required fields.');
+          if (password.length < 8) return showError('Password must be at least 8 characters.');
+          if (age < 13) return showError('You must be at least 13 to use VYNERA.');
+          if (age < 18 && !document.getElementById('parentPhone').value.trim()) return showError('Parent/guardian phone required for users under 18.');
+        }
+        if (from === 1) {
+          for (const q of ['q1','q2','q3','q4','q5']) {
+            if (!document.querySelector(`input[name="${q}"]:checked`)) return showError('Please answer all 5 questions.');
+          }
+          buildSummary();
+        }
+        steps[from].classList.remove('active');
+        dots[from].classList.remove('active'); dots[from].classList.add('done');
+        currentStep = from + 1;
+        steps[currentStep].classList.add('active'); dots[currentStep].classList.add('active');
+        window.scrollTo(0, 0);
+      }
+
+      function prevStep(from) {
+        steps[from].classList.remove('active'); dots[from].classList.remove('active');
+        currentStep = from - 1;
+        steps[currentStep].classList.add('active');
+        dots[currentStep].classList.remove('done'); dots[currentStep].classList.add('active');
+        window.scrollTo(0, 0);
+      }
+
+      function buildSummary() {
+        const name = document.getElementById('name').value.trim();
+        const answers = {};
+        ['q1','q2','q3','q4','q5'].forEach(q => { const el = document.querySelector(`input[name="${q}"]:checked`); if (el) answers[q] = el.value; });
+        document.getElementById('summaryBox').innerHTML = `
+          <strong style="color:var(--text)">Name:</strong> ${name}<br/>
+          <strong style="color:var(--text)">Response style:</strong> ${answers.q1||'–'}<br/>
+          <strong style="color:var(--text)">Communication:</strong> ${answers.q2||'–'}<br/>
+          <strong style="color:var(--text)">Recharge type:</strong> ${answers.q3||'–'}<br/>
+          <strong style="color:var(--text)">Advice preference:</strong> ${answers.q4||'–'}<br/>
+          <strong style="color:var(--text)">Bot personality:</strong> ${answers.q5||'–'}`;
+        const q5 = document.querySelector('input[name="q5"]:checked');
+        if (q5) document.getElementById('personality').value = q5.value;
+      }
+
+      async function submitForm() {
+        clearError();
+        const btn = document.getElementById('submitBtn');
+        btn.textContent = 'Creating...';
+        btn.disabled = true;
+
+        const getAnswers = () => {
+          const obj = {};
+          ['q1','q2','q3','q4','q5'].forEach(q => { const el = document.querySelector(`input[name="${q}"]:checked`); obj[q] = el ? el.value : ''; });
+          return obj;
+        };
+
+        const payload = {
+          name:         document.getElementById('name').value.trim(),
+          age:          parseInt(document.getElementById('age').value),
+          email:        document.getElementById('email').value.trim().toLowerCase(),
+          username:     document.getElementById('username').value.trim().toLowerCase(),
+          password:     document.getElementById('password').value,
+          parent_phone: document.getElementById('parentPhone').value.trim() || null,
+          personality:  document.getElementById('personality').value,
+          questionnaire: getAnswers(),
+        };
+
+        try {
+          // FIXED: /api/auth/signup (was /register)
+          const resp = await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await resp.json();
+          if (resp.ok && data.token) {
+            // FIXED: data.token (was data.access_token)
+            localStorage.setItem('vynera_token', data.token);
+            localStorage.setItem('vynera_user', JSON.stringify(data.user));
+            window.location.href = '/chat';
+          } else {
+            showError(data.detail || 'Registration failed. Please try again.');
+          }
+        } catch {
+          showError('Network error. Please try again.');
+        } finally {
+          btn.textContent = 'Create My Companion';
+          btn.disabled = false;
+        }
+      }
+    </script>
+  </body>
+</html>
